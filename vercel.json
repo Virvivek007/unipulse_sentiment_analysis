@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "framework": "vite",
+  "installCommand": "cd unipulse-ai/frontend && npm ci",
+  "buildCommand": "cd unipulse-ai/frontend && npm run build",
+  "outputDirectory": "unipulse-ai/frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
