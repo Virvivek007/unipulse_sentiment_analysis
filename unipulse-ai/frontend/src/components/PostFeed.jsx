@@ -2,173 +2,116 @@ export default function PostFeed({ posts }) {
   if (!posts || posts.length === 0) {
     return (
       <div style={{
+        background: "#161b22",
+        border: "1px solid #21262d",
+        borderRadius: 10,
+        padding: 20,
+        color: "#484f58",
         textAlign: "center",
-        padding: "40px 20px",
-        color: "var(--text-muted)",
-        fontSize: 14,
+        margin: "16px 0",
       }}>
-        <div style={{
-          fontSize: 48,
-          marginBottom: 16,
-          opacity: 0.5,
-        }}>
-          📭
-        </div>
         No posts available
       </div>
     );
   }
 
-  const getSentimentColor = (label) => {
-    switch (label?.toLowerCase()) {
-      case "positive":
-        return "var(--accent-success)";
-      case "negative":
-        return "var(--accent-danger)";
-      default:
-        return "var(--accent-warning)";
-    }
+  const getBorderColor = (label) => {
+    if (label === "positive") return "#10b981";
+    if (label === "negative") return "#ef4444";
+    return "#4b5563";
   };
 
-  const getSentimentEmoji = (label) => {
-    switch (label?.toLowerCase()) {
-      case "positive":
-        return "😊";
-      case "negative":
-        return "😞";
-      default:
-        return "😐";
-    }
-  };
-
-  const getSentimentBadge = (label) => {
-    switch (label?.toLowerCase()) {
-      case "positive":
-        return "badge-success";
-      case "negative":
-        return "badge-danger";
-      default:
-        return "badge-warning";
-    }
+  const getIcon = (label) => {
+    if (label === "positive") return "✅";
+    if (label === "negative") return "⚠️";
+    return "➡️";
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {posts.map((post, index) => (
-        <div
-          key={post.id || index}
-          className="card animate-fade-in"
-          style={{
-            padding: 20,
-            animationDelay: `${index * 50}ms`,
-            cursor: "pointer",
-          }}
-          onClick={() => post.url && window.open(post.url, "_blank")}
-        >
-          <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-            <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: "var(--radius-md)",
-              background: `linear-gradient(135deg, ${getSentimentColor(post.label)}20, ${getSentimentColor(post.label)}10)`,
-              border: `2px solid ${getSentimentColor(post.label)}`,
+    <div style={{ margin: "16px 0" }}>
+      <div style={{
+        fontSize: 11,
+        color: "#484f58",
+        letterSpacing: "2px",
+        marginBottom: 14,
+        fontFamily: "monospace",
+      }}>
+        REDDIT SIGNAL FEED
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {posts.map((post, i) => {
+          const borderColor = getBorderColor(post.label);
+          return (
+            <div key={i} style={{
+              background: "#161b22",
+              border: `1px solid ${borderColor}30`,
+              borderLeft: `4px solid ${borderColor}`,
+              borderRadius: 10,
+              padding: "14px 16px",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 24,
-              flexShrink: 0,
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: 12,
             }}>
-              {getSentimentEmoji(post.label)}
-            </div>
-            
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                gap: 12,
-                marginBottom: 8,
-              }}>
-                <h4 style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                  margin: 0,
-                  lineHeight: 1.4,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  fontSize: 13,
+                  color: "#c9d1d9",
+                  lineHeight: 1.6,
+                  marginBottom: 8,
+                  fontFamily: "monospace",
                 }}>
                   {post.title}
-                </h4>
-                <span className={`badge ${getSentimentBadge(post.label)}`}>
-                  {post.label || "neutral"}
-                </span>
-              </div>
-              
-              {post.body && (
-                <p style={{
-                  fontSize: 13,
-                  color: "var(--text-secondary)",
-                  margin: "0 0 12px 0",
-                  lineHeight: 1.5,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
+                </div>
+                <div style={{
+                  display: "flex",
+                  gap: 12,
+                  fontSize: 10,
+                  color: "#484f58",
+                  fontFamily: "monospace",
                 }}>
-                  {post.body}
-                </p>
-              )}
-              
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                fontSize: 12,
-                color: "var(--text-muted)",
-                flexWrap: "wrap",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span>⬆️</span>
-                  <span>{post.score || 0}</span>
+                  <span>📌 r/{post.subreddit}</span>
+                  <span>👍 {post.score} upvotes</span>
+                  <span>💬 {post.comments} comments</span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span>💬</span>
-                  <span>{post.comments || 0}</span>
+              </div>
+              <div style={{ textAlign: "center", flexShrink: 0 }}>
+                <div style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: 8,
+                  background: `${borderColor}18`,
+                  border: `1px solid ${borderColor}40`,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <div style={{ fontSize: 16 }}>{getIcon(post.label)}</div>
+                  <div style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: borderColor,
+                    marginTop: 2,
+                  }}>
+                    {Math.abs(post.compound).toFixed(2)}
+                  </div>
                 </div>
-                {post.subreddit && (
-                  <div style={{
-                    padding: "2px 8px",
-                    background: "var(--bg-tertiary)",
-                    borderRadius: "var(--radius-sm)",
-                    fontSize: 11,
-                  }}>
-                    r/{post.subreddit}
-                  </div>
-                )}
-                {post.compound !== undefined && (
-                  <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                    marginLeft: "auto",
-                  }}>
-                    <span style={{ color: "var(--text-muted)" }}>Sentiment:</span>
-                    <span style={{
-                      fontWeight: 700,
-                      color: getSentimentColor(post.label),
-                    }}>
-                      {(post.compound * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                )}
+                <div style={{
+                  fontSize: 8,
+                  color: "#484f58",
+                  marginTop: 4,
+                  letterSpacing: "0.5px",
+                  fontFamily: "monospace",
+                  textTransform: "uppercase",
+                }}>
+                  {post.label}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 }

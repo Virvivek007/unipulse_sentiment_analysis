@@ -39,7 +39,7 @@ const IIT_INFO = {
   "IITDharwad": { full: "IIT Dharwad", location: "Dharwad, KA", founded: 2016, color: "#06b6d4" },
 };
 
-const getColor = (score) => score >= 70 ? "var(--accent-success)" : score >= 55 ? "var(--accent-warning)" : "var(--accent-danger)";
+const getColor = (score) => score >= 70 ? "#10b981" : score >= 55 ? "#f59e0b" : "#ef4444";
 const getSentimentLabel = (score) => score >= 70 ? "positive" : score >= 55 ? "neutral" : "negative";
 
 export default function Dashboard() {
@@ -68,307 +68,156 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div style={{ 
-        padding: "40px 20px", 
-        textAlign: "center", 
-        color: "var(--accent-danger)", 
-        background: "var(--bg-primary)", 
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 16,
-      }}>
-        <div style={{ fontSize: 64, opacity: 0.5 }}>⚠️</div>
-        <h3 style={{ fontSize: 20, fontWeight: 700 }}>{error}</h3>
-        <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
-          Run: <code style={{ 
-            background: "var(--bg-tertiary)", 
-            padding: "4px 8px", 
-            borderRadius: "var(--radius-sm)",
-            fontFamily: "var(--font-mono)",
-          }}>python -m uvicorn main:app --reload</code> in backend folder
-        </p>
+      <div style={{ padding: "40px 20px", textAlign: "center", color: "#ef4444", background: "#0d1117", minHeight: "100vh" }}>
+        <h3>⚠️ {error}</h3>
+        <p style={{ marginTop: 10, fontSize: 14, color: "#8b949e" }}>Run: <code>python -m uvicorn main:app --reload</code> in backend folder</p>
       </div>
     );
   }
 
   const info = IIT_INFO[selected] || {};
-  const color = info.color || "var(--accent-purple)";
+  const color = info.color || "#8b5cf6";
 
   return (
-    <div style={{ 
-      padding: "32px 20px", 
-      background: "var(--bg-primary)", 
-      minHeight: "100vh",
-    }}>
-      <div className="container">
-        {/* ── HEADER ── */}
-        <div className="animate-fade-in" style={{ marginBottom: 40 }}>
-          <h1 style={{ 
-            color: "var(--text-primary)", 
-            margin: "0 0 12px 0", 
-            fontSize: 42,
-            fontWeight: 800,
-            letterSpacing: -1,
-          }}>
-            {info.full || selected}
-          </h1>
-          <div style={{ 
-            fontSize: 14, 
-            color: "var(--text-secondary)",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            flexWrap: "wrap",
-          }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span>📍</span>
-              <span>{info.location || "India"}</span>
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span>🎓</span>
-              <span>Founded {info.founded}</span>
-            </span>
-            <span style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: 6,
-              padding: "4px 12px",
-              background: "var(--bg-tertiary)",
-              borderRadius: "var(--radius-full)",
+    <div style={{ padding: "20px", background: "#0d1117", minHeight: "100vh", color: "#c9d1d9" }}>
+      {/* ── HEADER ── */}
+      <div style={{ marginBottom: 40 }}>
+        <h1 style={{ color: "#c9d1d9", margin: "0 0 8px 0", fontSize: 32 }}>
+          {info.full || selected}
+        </h1>
+        <div style={{ fontSize: 13, color: "#8b949e" }}>
+          📍 {info.location || "India"} • Founded {info.founded} • {iitData?.total_posts || 0} posts analyzed
+        </div>
+      </div>
+
+      {/* ── IIT SELECTOR ── */}
+      <div style={{ marginBottom: 32, display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {IIT_LIST.map(iit => (
+          <button
+            key={iit}
+            onClick={() => setSelected(iit)}
+            style={{
+              background: selected === iit ? IIT_INFO[iit].color : "#161b22",
+              border: `1px solid ${selected === iit ? IIT_INFO[iit].color : "#30363d"}`,
+              color: selected === iit ? "#000" : "#c9d1d9",
+              padding: "8px 14px",
+              borderRadius: 6,
+              cursor: "pointer",
               fontSize: 12,
-              fontWeight: 600,
-            }}>
-              <span>📊</span>
-              <span>{iitData?.total_posts || 0} posts analyzed</span>
-            </span>
-          </div>
-        </div>
+              fontWeight: 500,
+              transition: "all 0.2s",
+            }}
+          >
+            {iit}
+          </button>
+        ))}
+      </div>
 
-        {/* ── IIT SELECTOR ── */}
-        <div className="animate-fade-in" style={{ 
-          marginBottom: 32, 
-          display: "flex", 
-          flexWrap: "wrap", 
-          gap: 8,
-          animationDelay: "100ms",
-        }}>
-          {IIT_LIST.map(iit => (
-            <button
-              key={iit}
-              onClick={() => setSelected(iit)}
-              style={{
-                background: selected === iit ? IIT_INFO[iit].color : "var(--bg-secondary)",
-                border: `1px solid ${selected === iit ? IIT_INFO[iit].color : "var(--border-primary)"}`,
-                color: selected === iit ? "#000" : "var(--text-primary)",
-                padding: "10px 18px",
-                borderRadius: "var(--radius-md)",
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 600,
-                transition: "all var(--transition-fast)",
-                boxShadow: selected === iit ? "var(--shadow-md)" : "none",
-              }}
-              onMouseEnter={(e) => {
-                if (selected !== iit) {
-                  e.currentTarget.style.background = "var(--bg-tertiary)";
-                  e.currentTarget.style.borderColor = "var(--text-secondary)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (selected !== iit) {
-                  e.currentTarget.style.background = "var(--bg-secondary)";
-                  e.currentTarget.style.borderColor = "var(--border-primary)";
-                }
-              }}
-            >
-              {iit}
-            </button>
-          ))}
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "40px", color: "#8b949e" }}>
+          Loading {selected} data...
         </div>
-
-        {loading ? (
-          <div style={{ 
-            textAlign: "center", 
-            padding: "60px 20px", 
-            color: "var(--text-secondary)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 16,
+      ) : iitData ? (
+        <>
+          {/* ── OVERALL SENTIMENT ── */}
+          <div style={{
+            background: "#161b22",
+            border: `2px solid ${color}`,
+            borderRadius: 12,
+            padding: 24,
+            marginBottom: 32,
           }}>
-            <div className="animate-pulse" style={{ fontSize: 48 }}>⏳</div>
-            <div style={{ fontSize: 14 }}>Loading {selected} data...</div>
-          </div>
-        ) : iitData ? (
-          <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
-            {/* ── OVERALL SENTIMENT ── */}
-            <div className="card" style={{
-              marginBottom: 32,
-              border: `2px solid ${color}`,
-              background: `linear-gradient(135deg, var(--bg-secondary), ${color}10)`,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ 
-                    fontSize: 12, 
-                    color: "var(--text-secondary)", 
-                    textTransform: "uppercase", 
-                    letterSpacing: 1.5,
-                    fontWeight: 600,
-                    marginBottom: 12,
-                  }}>
-                    Overall Sentiment
-                  </div>
-                  <div style={{
-                    fontSize: 64,
-                    fontWeight: 900,
-                    color: getColor(iitData.overall),
-                    margin: "12px 0",
-                    lineHeight: 1,
-                  }}>
-                    {iitData.overall}/100
-                  </div>
-                  <div style={{ 
-                    fontSize: 14, 
-                    color: "var(--text-secondary)",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 1,
-                  }}>
-                    {getSentimentLabel(iitData.overall)}
-                  </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 12, color: "#8b949e", textTransform: "uppercase", letterSpacing: 1 }}>
+                  Overall Sentiment
                 </div>
                 <div style={{
-                  width: 180,
-                  height: 180,
-                  borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${color}30, ${color}10)`,
-                  border: `3px solid ${color}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 80,
-                  boxShadow: `0 0 40px ${color}40`,
+                  fontSize: 48,
+                  fontWeight: 900,
+                  color: getColor(iitData.overall),
+                  margin: "12px 0",
                 }}>
-                  {iitData.overall >= 70 ? "😊" : iitData.overall >= 55 ? "😐" : "😞"}
+                  {iitData.overall}/100
+                </div>
+                <div style={{ fontSize: 13, color: "#8b949e" }}>
+                  {getSentimentLabel(iitData.overall).toUpperCase()}
                 </div>
               </div>
-            </div>
-
-            {/* ── CATEGORY BREAKDOWN ── */}
-            <div className="card" style={{ marginBottom: 32 }}>
-              <h3 style={{ 
-                color: "var(--text-primary)", 
-                margin: "0 0 24px 0", 
-                fontSize: 16,
-                fontWeight: 700,
+              <div style={{
+                width: 150,
+                height: 150,
+                borderRadius: "50%",
+                background: `${color}20`,
+                border: `2px solid ${color}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 64,
               }}>
-                Category Sentiment
-              </h3>
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={iitData.categories || []}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-secondary)" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fill: "var(--text-secondary)", fontSize: 12 }} 
-                    axisLine={{ stroke: "var(--border-secondary)" }}
-                    tickLine={{ stroke: "var(--border-secondary)" }}
-                  />
-                  <YAxis 
-                    tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
-                    axisLine={{ stroke: "var(--border-secondary)" }}
-                    tickLine={{ stroke: "var(--border-secondary)" }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      background: "var(--bg-secondary)", 
-                      border: "1px solid var(--border-primary)", 
-                      color: "var(--text-primary)",
-                      borderRadius: "var(--radius-md)",
-                      boxShadow: "var(--shadow-lg)",
-                    }}
-                  />
-                  <Bar 
-                    dataKey="score" 
-                    fill={color} 
-                    radius={[8, 8, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* ── CATEGORY CARDS ── */}
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", 
-              gap: 16, 
-              marginBottom: 32 
-            }}>
-              {iitData.categories?.map((cat, index) => (
-                <div 
-                  key={cat.name}
-                  className="card animate-fade-in"
-                  style={{
-                    borderLeft: `4px solid ${getColor(cat.score)}`,
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  <div style={{ 
-                    fontSize: 12, 
-                    color: "var(--text-secondary)", 
-                    marginBottom: 12,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                  }}>
-                    {cat.name}
-                  </div>
-                  <div style={{ 
-                    fontSize: 36, 
-                    fontWeight: 900, 
-                    color: getColor(cat.score), 
-                    marginBottom: 8,
-                    lineHeight: 1,
-                  }}>
-                    {cat.score}/100
-                  </div>
-                  <div style={{ 
-                    fontSize: 12, 
-                    color: "var(--text-muted)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}>
-                    <span>📝</span>
-                    <span>{cat.posts || 0} posts</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── TOP POSTS ── */}
-            <div className="card">
-              <h3 style={{ 
-                color: "var(--text-primary)", 
-                margin: "0 0 24px 0", 
-                fontSize: 16,
-                fontWeight: 700,
-              }}>
-                Top Sentiment Posts
-              </h3>
-              <PostFeed posts={iitData.top_posts?.map(p => ({
-                ...p,
-                label: p.compound > 0.5 ? "positive" : p.compound < -0.5 ? "negative" : "neutral",
-                subreddit: p.subreddit || selected,
-                title: p.title,
-              })) || []} />
+                {iitData.overall >= 70 ? "😊" : iitData.overall >= 55 ? "😐" : "😞"}
+              </div>
             </div>
           </div>
-        ) : null}
-      </div>
+
+          {/* ── CATEGORY BREAKDOWN ── */}
+          <div style={{
+            background: "#161b22",
+            border: "1px solid #21262d",
+            borderRadius: 12,
+            padding: 24,
+            marginBottom: 32,
+          }}>
+            <h3 style={{ color: "#c9d1d9", margin: "0 0 20px 0", fontSize: 14 }}>CATEGORY SENTIMENT</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={iitData.categories || []}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
+                <XAxis dataKey="name" tick={{ fill: "#8b949e", fontSize: 12 }} />
+                <YAxis tick={{ fill: "#8b949e", fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: "#161b22", border: "1px solid #30363d", color: "#c9d1d9" }} />
+                <Bar dataKey="score" fill={color} radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* ── CATEGORY CARDS ── */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
+            {iitData.categories?.map(cat => (
+              <div key={cat.name} style={{
+                background: "#161b22",
+                border: `1px solid ${getColor(cat.score)}40`,
+                borderLeft: `4px solid ${getColor(cat.score)}`,
+                borderRadius: 10,
+                padding: 16,
+              }}>
+                <div style={{ fontSize: 12, color: "#8b949e", marginBottom: 8 }}>{cat.name}</div>
+                <div style={{ fontSize: 28, fontWeight: 900, color: getColor(cat.score), marginBottom: 8 }}>
+                  {cat.score}/100
+                </div>
+                <div style={{ fontSize: 11, color: "#8b949e" }}>
+                  {cat.posts || 0} posts
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── TOP POSTS ── */}
+          <div style={{
+            background: "#161b22",
+            border: "1px solid #21262d",
+            borderRadius: 12,
+            padding: 24,
+          }}>
+            <h3 style={{ color: "#c9d1d9", margin: "0 0 20px 0", fontSize: 14 }}>TOP SENTIMENT POSTS</h3>
+            <PostFeed posts={iitData.top_posts?.map(p => ({
+              ...p,
+              label: p.compound > 0.5 ? "positive" : p.compound < -0.5 ? "negative" : "neutral",
+              subreddit: p.subreddit || selected,
+              title: p.title,
+            })) || []} />
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

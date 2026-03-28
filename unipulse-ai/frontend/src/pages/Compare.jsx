@@ -28,7 +28,7 @@ const IIT_INFO = {
   "IITDharwad": { full: "IIT Dharwad", color: "#06b6d4" },
 };
 
-const getColor = (score) => score >= 70 ? "var(--accent-success)" : score >= 55 ? "var(--accent-warning)" : "var(--accent-danger)";
+const getColor = (score) => score >= 70 ? "#10b981" : score >= 55 ? "#f59e0b" : "#ef4444";
 
 export default function Compare() {
   const [allIITs, setAllIITs] = useState([]);
@@ -61,275 +61,147 @@ export default function Compare() {
 
   if (error) {
     return (
-      <div style={{ 
-        padding: "40px 20px", 
-        textAlign: "center", 
-        color: "var(--accent-danger)", 
-        background: "var(--bg-primary)", 
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 16,
-      }}>
-        <div style={{ fontSize: 64, opacity: 0.5 }}>⚠️</div>
-        <h3 style={{ fontSize: 20, fontWeight: 700 }}>{error}</h3>
+      <div style={{ padding: "40px 20px", textAlign: "center", color: "#ef4444", background: "#0d1117", minHeight: "100vh" }}>
+        <h3>⚠️ {error}</h3>
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      padding: "32px 20px", 
-      background: "var(--bg-primary)", 
-      minHeight: "100vh",
-    }}>
-      <div className="container">
-        <div className="animate-fade-in">
-          <div style={{ marginBottom: 40 }}>
-            <h1 style={{ 
-              color: "var(--text-primary)", 
-              margin: "0 0 12px 0", 
-              fontSize: 42,
-              fontWeight: 800,
-              letterSpacing: -1,
-            }}>
-              Compare All IITs
-            </h1>
-            <div style={{ 
-              fontSize: 14, 
-              color: "var(--text-secondary)",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}>
-              <span>🏆</span>
-              <span>Reddit Sentiment Analysis across all {allIITs.length} IIT institutions</span>
-            </div>
-          </div>
-
-          {loading ? (
-            <div style={{ 
-              textAlign: "center", 
-              padding: "60px 20px", 
-              color: "var(--text-secondary)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 16,
-            }}>
-              <div className="animate-pulse" style={{ fontSize: 48 }}>⏳</div>
-              <div style={{ fontSize: 14 }}>Loading all IIT data...</div>
-            </div>
-          ) : (
-            <>
-              {/* Sort Controls */}
-              <div className="card" style={{ 
-                marginBottom: 32, 
-                display: "flex", 
-                gap: 12,
-                padding: "16px 20px",
-              }}>
-                <span style={{ 
-                  fontSize: 13, 
-                  color: "var(--text-secondary)",
-                  fontWeight: 600,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}>
-                  <span>📊</span>
-                  <span>Sort by:</span>
-                </span>
-                <button
-                  onClick={() => setSortBy("score")}
-                  className={`btn ${sortBy === "score" ? "btn-primary" : "btn-secondary"}`}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: 12,
-                  }}
-                >
-                  Score
-                </button>
-                <button
-                  onClick={() => setSortBy("name")}
-                  className={`btn ${sortBy === "name" ? "btn-primary" : "btn-secondary"}`}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: 12,
-                  }}
-                >
-                  Name
-                </button>
-              </div>
-
-              {/* Chart */}
-              <div className="card" style={{ marginBottom: 32 }}>
-                <h3 style={{ 
-                  color: "var(--text-primary)", 
-                  margin: "0 0 24px 0", 
-                  fontSize: 16,
-                  fontWeight: 700,
-                }}>
-                  Sentiment Scores
-                </h3>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={sorted}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-secondary)" />
-                    <XAxis 
-                      dataKey="iit" 
-                      angle={-45} 
-                      textAnchor="end" 
-                      height={100} 
-                      tick={{ fill: "var(--text-secondary)", fontSize: 10 }}
-                      axisLine={{ stroke: "var(--border-secondary)" }}
-                      tickLine={{ stroke: "var(--border-secondary)" }}
-                    />
-                    <YAxis 
-                      tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
-                      axisLine={{ stroke: "var(--border-secondary)" }}
-                      tickLine={{ stroke: "var(--border-secondary)" }}
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        background: "var(--bg-secondary)", 
-                        border: "1px solid var(--border-primary)", 
-                        color: "var(--text-primary)",
-                        borderRadius: "var(--radius-md)",
-                        boxShadow: "var(--shadow-lg)",
-                      }}
-                    />
-                    <Bar dataKey="score" radius={[8, 8, 0, 0]}>
-                      {sorted.map((entry, idx) => (
-                        <Cell key={`cell-${idx}`} fill={getColor(entry.score)} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Cards Grid */}
-              <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", 
-                gap: 16 
-              }}>
-                {sorted.map((iit, idx) => {
-                  const info = IIT_INFO[iit.iit] || { full: iit.iit };
-                  const color = getColor(iit.score);
-                  return (
-                    <div 
-                      key={iit.iit}
-                      className="card animate-fade-in"
-                      style={{
-                        borderTop: `4px solid ${color}`,
-                        animationDelay: `${idx * 30}ms`,
-                      }}
-                    >
-                      <div style={{ 
-                        display: "flex", 
-                        justifyContent: "space-between", 
-                        alignItems: "start", 
-                        marginBottom: 16,
-                        gap: 12,
-                      }}>
-                        <div>
-                          <div style={{ 
-                            fontSize: 16, 
-                            fontWeight: 800, 
-                            color: "var(--text-primary)",
-                            marginBottom: 4,
-                          }}>
-                            #{idx + 1}
-                          </div>
-                          <div style={{ 
-                            fontSize: 11, 
-                            color: "var(--text-muted)",
-                            textTransform: "uppercase",
-                            letterSpacing: 1,
-                            fontWeight: 600,
-                          }}>
-                            Rank
-                          </div>
-                        </div>
-                        <div style={{ textAlign: "right" }}>
-                          <div style={{ 
-                            fontSize: 40, 
-                            fontWeight: 900, 
-                            color,
-                            lineHeight: 1,
-                          }}>
-                            {iit.score}
-                          </div>
-                          <div style={{ 
-                            fontSize: 10, 
-                            color: "var(--text-muted)",
-                            textTransform: "uppercase",
-                            letterSpacing: 1,
-                            fontWeight: 600,
-                          }}>
-                            Score
-                          </div>
-                        </div>
-                      </div>
-
-                      <div style={{ 
-                        marginBottom: 16, 
-                        paddingBottom: 16, 
-                        borderBottom: "1px solid var(--border-secondary)",
-                      }}>
-                        <div style={{ 
-                          fontSize: 15, 
-                          fontWeight: 700, 
-                          color: "var(--text-primary)", 
-                          marginBottom: 6,
-                        }}>
-                          {info.full}
-                        </div>
-                        <div style={{ 
-                          fontSize: 12, 
-                          color: "var(--text-secondary)",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                        }}>
-                          <span>📝</span>
-                          <span>{iit.posts} posts analyzed</span>
-                        </div>
-                      </div>
-
-                      <div style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        justifyContent: "space-between",
-                        gap: 12,
-                      }}>
-                        <div className="progress-bar" style={{ flex: 1 }}>
-                          <div 
-                            className="progress-bar-fill"
-                            style={{
-                              width: `${iit.score}%`,
-                              background: `linear-gradient(90deg, ${color}, ${color}dd)`,
-                            }}
-                          />
-                        </div>
-                        <div style={{
-                          fontSize: 14,
-                          fontWeight: 700,
-                          color,
-                        }}>
-                          {iit.score >= 70 ? "✅" : iit.score >= 55 ? "😐" : "⚠️"}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+    <div style={{ padding: "20px", background: "#0d1117", minHeight: "100vh", color: "#c9d1d9" }}>
+      <div style={{ marginBottom: 40 }}>
+        <h1 style={{ color: "#c9d1d9", margin: "0 0 8px 0", fontSize: 32 }}>
+          Compare All IITs
+        </h1>
+        <div style={{ fontSize: 13, color: "#8b949e" }}>
+          🏆 Reddit Sentiment Analysis across all {allIITs.length} IIT institutions
         </div>
       </div>
+
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "40px", color: "#8b949e" }}>
+          Loading all IIT data...
+        </div>
+      ) : (
+        <>
+          {/* Sort Controls */}
+          <div style={{ marginBottom: 24, display: "flex", gap: 8 }}>
+            <button
+              onClick={() => setSortBy("score")}
+              style={{
+                background: sortBy === "score" ? "#58a6ff" : "#161b22",
+                color: sortBy === "score" ? "#000" : "#c9d1d9",
+                border: `1px solid ${sortBy === "score" ? "#58a6ff" : "#30363d"}`,
+                padding: "8px 16px",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: 500,
+              }}
+            >
+              Sort by Score
+            </button>
+            <button
+              onClick={() => setSortBy("name")}
+              style={{
+                background: sortBy === "name" ? "#58a6ff" : "#161b22",
+                color: sortBy === "name" ? "#000" : "#c9d1d9",
+                border: `1px solid ${sortBy === "name" ? "#58a6ff" : "#30363d"}`,
+                padding: "8px 16px",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: 500,
+              }}
+            >
+              Sort by Name
+            </button>
+          </div>
+
+          {/* Chart */}
+          <div style={{
+            background: "#161b22",
+            border: "1px solid #21262d",
+            borderRadius: 12,
+            padding: 24,
+            marginBottom: 32,
+          }}>
+            <h3 style={{ color: "#c9d1d9", margin: "0 0 20px 0", fontSize: 14 }}>SENTIMENT SCORES</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={sorted}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
+                <XAxis dataKey="iit" angle={-45} textAnchor="end" height={100} tick={{ fill: "#8b949e", fontSize: 10 }} />
+                <YAxis tick={{ fill: "#8b949e", fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: "#161b22", border: "1px solid #30363d", color: "#c9d1d9" }} />
+                <Bar dataKey="score" radius={[8, 8, 0, 0]}>
+                  {sorted.map((entry, idx) => (
+                    <Cell key={`cell-${idx}`} fill={getColor(entry.score)} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Cards Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 16 }}>
+            {sorted.map((iit, idx) => {
+              const info = IIT_INFO[iit.iit] || { full: iit.iit };
+              const color = getColor(iit.score);
+              return (
+                <div key={iit.iit} style={{
+                  background: "#161b22",
+                  border: `1px solid ${color}40`,
+                  borderTop: `4px solid ${color}`,
+                  borderRadius: 10,
+                  padding: 16,
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#c9d1d9" }}>
+                        #{idx + 1}
+                      </div>
+                      <div style={{ fontSize: 12, color: "#8b949e" }}>RANK</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 32, fontWeight: 900, color }}>
+                        {iit.score}
+                      </div>
+                      <div style={{ fontSize: 10, color: "#8b949e" }}>SCORE</div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: "1px solid #21262d" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#c9d1d9", marginBottom: 4 }}>
+                      {info.full}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#8b949e" }}>
+                      {iit.posts} posts analyzed
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ flex: 1, height: 4, background: "#21262d", borderRadius: 2, marginRight: 8 }}>
+                      <div style={{
+                        height: "100%",
+                        width: `${iit.score}%`,
+                        background: color,
+                        borderRadius: 2,
+                      }} />
+                    </div>
+                    <div style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: iit.score >= 70 ? "#10b981" : iit.score >= 55 ? "#f59e0b" : "#ef4444",
+                    }}>
+                      {iit.score >= 70 ? "✅" : iit.score >= 55 ? "😐" : "⚠️"}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
