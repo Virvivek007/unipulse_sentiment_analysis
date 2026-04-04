@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+const BASE = import.meta.env.VITE_API_BASE_URL || "https://unipulse-sentiment-analysis-4.onrender.com";
 
 export const fetchIITSentiment = (iitKey, category = "All") =>
   axios.get(`${BASE}/sentiment/${iitKey}`, { params: { category } }).then((r) => r.data);

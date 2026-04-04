@@ -53,3 +53,5 @@ desktop.ini
 .temp/
 *.zip
 *.tar.gz
+.vercel
+.env*.local
