@@ -5,6 +5,8 @@ import {
 } from "recharts";
 import { fetchAllIITs } from "../api";
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const IIT_INFO = {
   IITBHU:         { full: "IIT BHU" },
   IITBhubaneswar: { full: "IIT Bhubaneswar" },
@@ -31,13 +33,17 @@ const IIT_INFO = {
   IITDharwad:     { full: "IIT Dharwad" },
 };
 
+const CATEGORIES = [
+  "All", "Academics", "Placements", "Hostel Life",
+  "Fests & Culture", "Mental Health", "Infrastructure", "Administration", "General",
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 const getColor = (s) => s >= 70 ? "#00d4ff" : s >= 55 ? "#f5a623" : "#ff3b7a";
 const getLabel = (s) => s >= 70 ? "Strong"   : s >= 55 ? "Mixed"   : "Weak";
 
-const CATEGORIES = [
-  "All","Academics","Placements","Hostel Life",
-  "Fests & Culture","Mental Health","Infrastructure","Administration","General",
-];
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Compare() {
   const [allIITs,  setAllIITs]  = useState([]);
@@ -51,7 +57,8 @@ export default function Compare() {
       try {
         setLoading(true);
         const data = await fetchAllIITs(category);
-        setAllIITs(Array.isArray(data) ? data : []);
+        // api returns array directly OR { data: [...] }
+        setAllIITs(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
         setError(null);
       } catch (err) {
         console.error(err);
@@ -83,8 +90,9 @@ export default function Compare() {
           textTransform: "uppercase", color: "#555a78", marginBottom: 6,
         }}>Compare</div>
         <h1 style={{
-          fontFamily: "'Space Grotesk', sans-serif", fontSize: 30,
-          fontWeight: 800, color: "#fff", letterSpacing: "-0.5px", marginBottom: 6,
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: 30, fontWeight: 800, color: "#fff",
+          letterSpacing: "-0.5px", marginBottom: 6,
         }}>
           Rank every IIT at a glance
         </h1>
@@ -93,8 +101,9 @@ export default function Compare() {
         </p>
         <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
           <span style={{ fontSize: 13, color: "#555a78" }}>
-            <span style={{ fontWeight: 800, color: "#fff", fontSize: 18 }}>{allIITs.length}</span>
-            {" "}Institutions
+            <span style={{ fontWeight: 800, color: "#fff", fontSize: 18 }}>
+              {allIITs.length}
+            </span>{" "}Institutions
           </span>
           <span style={{ fontSize: 12, color: "#555a78" }}>Live sentiment rankings</span>
         </div>
@@ -105,7 +114,8 @@ export default function Compare() {
         {["score", "name"].map((s) => (
           <button key={s} onClick={() => setSortBy(s)} style={{
             fontSize: 13, fontWeight: 500, padding: "7px 18px", borderRadius: 8,
-            cursor: "pointer", transition: "all 0.2s ease", fontFamily: "'Inter', sans-serif",
+            cursor: "pointer", transition: "all 0.2s ease",
+            fontFamily: "'Inter', sans-serif",
             background: sortBy === s ? "#1a1d2e" : "transparent",
             border: sortBy === s ? "1px solid #3a3d52" : "1px solid #2a2d3e",
             color: sortBy === s ? "#fff" : "#8b91b0",
@@ -113,20 +123,26 @@ export default function Compare() {
             Sort by {s === "score" ? "Score" : "Name"}
           </button>
         ))}
+
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: "#555a78", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Category
-          </span>
+          <span style={{
+            fontSize: 12, fontWeight: 600, color: "#555a78",
+            textTransform: "uppercase", letterSpacing: "0.1em",
+          }}>Category</span>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             style={{
-              fontSize: 13, fontWeight: 500, background: "#1a1d2e", color: "#e8eaf6",
-              border: "1px solid #2a2d3e", padding: "8px 34px 8px 14px", borderRadius: 8,
-              outline: "none", cursor: "pointer", fontFamily: "'Inter', sans-serif",
+              fontSize: 13, fontWeight: 500,
+              background: "#1a1d2e", color: "#e8eaf6",
+              border: "1px solid #2a2d3e",
+              padding: "8px 34px 8px 14px", borderRadius: 8,
+              outline: "none", cursor: "pointer",
+              fontFamily: "'Inter', sans-serif",
               minWidth: 170, appearance: "none",
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238b91b0' d='M5 7L0 2h10z'/%3E%3C/svg%3E")`,
-              backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 12px center",
             }}
           >
             {CATEGORIES.map((c) => (
@@ -140,9 +156,15 @@ export default function Compare() {
       {error && (
         <div style={{
           textAlign: "center", padding: 32, fontSize: 14, color: "#ff4d4d",
-          background: "rgba(255,77,77,0.06)", border: "1px solid rgba(255,77,77,0.2)",
+          background: "rgba(255,77,77,0.06)",
+          border: "1px solid rgba(255,77,77,0.2)",
           borderRadius: 12, marginBottom: 20,
-        }}>⚠️ {error}</div>
+        }}>
+          ⚠️ {error}
+          <p style={{ marginTop: 8, fontSize: 12, color: "#8b91b0" }}>
+            Run: <code>py -m uvicorn api:app --reload --port 8000</code> in backend folder
+          </p>
+        </div>
       )}
 
       {/* ── Loading ── */}
@@ -160,8 +182,8 @@ export default function Compare() {
             borderRadius: 16, padding: "24px 28px", marginBottom: 24,
           }}>
             <div style={{
-              fontFamily: "'Space Grotesk', sans-serif", fontSize: 18,
-              fontWeight: 700, color: "#fff", marginBottom: 3,
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 3,
             }}>
               Sentiment Scoreboard {category !== "All" ? `— ${category}` : ""}
             </div>
@@ -170,7 +192,11 @@ export default function Compare() {
             </div>
             <ResponsiveContainer width="100%" height={460}>
               <BarChart data={sorted} barCategoryGap="28%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255,255,255,0.05)"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="iit" angle={-40} textAnchor="end" height={100}
                   tick={{ fill: "#555a78", fontSize: 10, fontFamily: "Inter" }}
@@ -183,7 +209,8 @@ export default function Compare() {
                 <Tooltip
                   contentStyle={{
                     background: "#13151f", border: "1px solid #2a2d3e",
-                    borderRadius: 10, color: "#e8eaf6", fontSize: 12, fontFamily: "Inter",
+                    borderRadius: 10, color: "#e8eaf6",
+                    fontSize: 12, fontFamily: "Inter",
                   }}
                   cursor={{ fill: "rgba(255,255,255,0.03)" }}
                 />
@@ -215,7 +242,6 @@ export default function Compare() {
                     border: `1px solid ${color}33`,
                     borderTop: `3px solid ${color}`,
                     borderRadius: 14,
-                    /* Golden-ratio-ish rectangle: wider than tall */
                     padding: "20px 22px 18px",
                     height: 210,
                     display: "flex",
@@ -237,7 +263,7 @@ export default function Compare() {
                     e.currentTarget.style.background = "#1a1d2e";
                   }}
                 >
-                  {/* ── Top: Rank + Score ── */}
+                  {/* Rank + Score */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
                       <div style={{
@@ -263,7 +289,7 @@ export default function Compare() {
                     </div>
                   </div>
 
-                  {/* ── Middle: Name + Posts ── */}
+                  {/* Name + Posts */}
                   <div>
                     <div style={{
                       fontFamily: "'Space Grotesk', sans-serif",
@@ -276,7 +302,7 @@ export default function Compare() {
                     </div>
                   </div>
 
-                  {/* ── Bottom: Progress + Badge ── */}
+                  {/* Progress + Badge */}
                   <div>
                     <div style={{
                       height: 3, background: "#2a2d3e",
@@ -305,6 +331,13 @@ export default function Compare() {
               );
             })}
           </div>
+
+          {/* ── Empty state ── */}
+          {sorted.length === 0 && (
+            <div style={{ textAlign: "center", padding: "60px 20px", fontSize: 14, color: "#555a78" }}>
+              No data available. Run the scraper first: <code>py scraper.py</code>
+            </div>
+          )}
         </>
       )}
     </main>

@@ -82,6 +82,7 @@
   height: 56px;
   background: var(--bg-nav);
   border-bottom: 1px solid var(--border-default);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 

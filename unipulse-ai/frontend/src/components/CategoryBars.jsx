@@ -1,78 +1,111 @@
 export default function CategoryBars({ categories }) {
   if (!categories || categories.length === 0) {
     return (
-      <div style={{
-        background: "#161b22",
-        border: "1px solid #21262d",
-        borderRadius: 10,
-        padding: 20,
-        color: "#484f58",
+      <div className="card" style={{
         textAlign: "center",
-        margin: "16px 0",
+        padding: "40px 20px",
       }}>
-        No category data available
+        <div style={{
+          fontSize: 48,
+          marginBottom: 16,
+          opacity: 0.5,
+        }}>
+          📊
+        </div>
+        <div style={{ color: "var(--text-muted)", fontSize: 14 }}>
+          No category data available
+        </div>
       </div>
     );
   }
 
   const getColor = (score) => {
-    if (score >= 70) return "#10b981";
-    if (score >= 50) return "#f59e0b";
-    return "#ef4444";
+    if (score >= 70) return "var(--accent-success)";
+    if (score >= 50) return "var(--accent-warning)";
+    return "var(--accent-danger)";
+  };
+
+  const getBadge = (score) => {
+    if (score >= 70) return "badge-success";
+    if (score >= 50) return "badge-warning";
+    return "badge-danger";
+  };
+
+  const getLabel = (score) => {
+    if (score >= 70) return "Positive";
+    if (score >= 50) return "Neutral";
+    return "Negative";
   };
 
   return (
-    <div style={{
-      background: "#161b22",
-      border: "1px solid #21262d",
-      borderRadius: 10,
-      padding: 20,
-      margin: "16px 0",
-    }}>
+    <div className="card">
       <div style={{
         fontSize: 11,
-        color: "#484f58",
+        color: "var(--text-muted)",
         letterSpacing: "2px",
-        marginBottom: 16,
-        fontFamily: "monospace",
+        marginBottom: 20,
+        fontFamily: "var(--font-mono)",
+        textTransform: "uppercase",
+        fontWeight: 600,
       }}>
-        CATEGORY BREAKDOWN
+        Category Breakdown
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {categories.map((cat) => (
-          <div key={cat.name}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {categories.map((cat, index) => (
+          <div 
+            key={cat.name}
+            className="animate-fade-in"
+            style={{ animationDelay: `${index * 30}ms` }}
+          >
             <div style={{
               display: "flex",
               justifyContent: "space-between",
-              marginBottom: 6,
-              fontSize: 12,
-              fontFamily: "monospace",
+              alignItems: "center",
+              marginBottom: 8,
+              gap: 12,
             }}>
-              <span style={{ color: "#c9d1d9" }}>{cat.name}</span>
-              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                <span style={{ color: "#484f58", fontSize: 10 }}>
-                  {cat.posts} posts
-                </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
                 <span style={{
-                  fontWeight: 800,
-                  color: getColor(cat.score),
+                  color: "var(--text-primary)",
+                  fontSize: 14,
+                  fontWeight: 600,
                 }}>
-                  {cat.score}%
+                  {cat.name}
+                </span>
+                <span className={`badge ${getBadge(cat.score)}`}>
+                  {getLabel(cat.score)}
                 </span>
               </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{
+                  fontSize: 11,
+                  color: "var(--text-muted)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}>
+                  <span>📝</span>
+                  <span>{cat.posts} posts</span>
+                </div>
+                <div style={{
+                  fontSize: 20,
+                  fontWeight: 800,
+                  color: getColor(cat.score),
+                  minWidth: 60,
+                  textAlign: "right",
+                }}>
+                  {cat.score}%
+                </div>
+              </div>
             </div>
-            <div style={{
-              height: 6,
-              borderRadius: 3,
-              background: "#21262d",
-            }}>
-              <div style={{
-                height: "100%",
-                width: `${cat.score}%`,
-                borderRadius: 3,
-                background: getColor(cat.score),
-                transition: "width 0.7s ease",
-              }} />
+            <div className="progress-bar">
+              <div 
+                className="progress-bar-fill"
+                style={{
+                  width: `${cat.score}%`,
+                  background: `linear-gradient(90deg, ${getColor(cat.score)}, ${getColor(cat.score)}dd)`,
+                }}
+              />
             </div>
           </div>
         ))}
