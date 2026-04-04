@@ -11,7 +11,7 @@ export default defineConfig({
       },
     },
   },
-  base: '/Unipulse/',
+  base: '/',
   build: {
     chunkSizeWarningLimit: 900,
     rollupOptions: {
